@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Model Analytics Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        :root {
+            --primary-blue: #1e40af;
+            --light-blue: #3b82f6;
+            --dark-blue: #1e3a8a;
+            --accent-blue: #60a5fa;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8fafc;
+        }
+        .dashboard-container {
+            max-width: 1440px;
+            margin: 0 auto;
+        }
+        .dashboard-header {
+            background-color: white;
+            border-bottom: 2px solid var(--primary-blue);
+        }
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            border-bottom: 1px solid #e5e7eb;
+            color: var(--primary-blue);
+        }
+        .blog-card {
+            border-left: 3px solid var(--accent-blue);
+        }
+        .blogs-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+        }
+        .stat-value {
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+        .chatbot-container {
+            border-left: 1px solid #e5e7eb;
+        }
+        .chat-message {
+            border-radius: 18px;
+            max-width: 80%;
+        }
+        .user-message {
+            background-color: var(--light-blue);
+            color: white;
+            margin-left: auto;
+        }
+        .bot-message {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+        }
+        .chat-input {
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+        }
+        .chat-input:focus {
+            border-color: var(--accent-blue);
+            outline: none;
+        }
+        .us-map-placeholder {
+            background-color: #f9fafb;
+            border: 1px dashed #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-blue);
+        }
+        .report-item {
+            border-left: 3px solid var(--accent-blue);
+            padding-left: 12px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <header class="dashboard-header p-4 flex items-center justify-between shadow-sm">
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-gray-800">Predictive Analytics Dashboard</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-sm text-gray-600">
+                    Last updated: <span class="font-medium">Today, 10:45 AM</span>
+                </div>
+                <button class="btn-primary px-4 py-2 rounded-md flex items-center">
+                    <i class="fas fa-sync-alt mr-2"></i> Refresh Data
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Content -->
+        <main class="p-4">
+            <div class="grid grid-cols-12 gap-4">
+                <!-- Blogs AI Section -->
+                <div class="col-span-12 md:col-span-3">
+                    <div class="card h-full">
+                        <div class="card-header p-4">
+                            <h2 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-robot mr-2"></i> Blogs AI
+                            </h2>
+                        </div>
+                        <div class="blogs-container p-4">
+                            <div class="blog-card p-3 mb-3 bg-gray-50">
+                                <h3 class="font-medium text-gray-800">Healthcare Trends 2023</h3>
+                                <p class="text-sm text-gray-600 mt-1">Recent data suggests that preventative care visits are increasing by 15% in urban areas...</p>
+                                <div class="text-xs text-gray-500 mt-2">Generated: 2 hours ago</div>
+                            </div>
+                            <div class="blog-card p-3 mb-3 bg-gray-50">
+                                <h3 class="font-medium text-gray-800">Impact of Telemedicine</h3>
+                                <p class="text-sm text-gray-600 mt-1">Telemedicine adoption has risen to 45% among patients aged 55-70, indicating a shift in healthcare consumption patterns...</p>
+                                <div class="text-xs text-gray-500 mt-2">Generated: 5 hours ago</div>
+                            </div>
+                            <div class="blog-card p-3 mb-3 bg-gray-50">
+                                <h3 class="font-medium text-gray-800">Preventative Care Analytics</h3>
+                                <p class="text-sm text-gray-600 mt-1">Data from Q2 shows a correlation between preventative care and reduced emergency visits, particularly in communities with higher healthcare literacy...</p>
+                                <div class="text-xs text-gray-500 mt-2">Generated: 1 day ago</div>
+                            </div>
+                            <div class="blog-card p-3 mb-3 bg-gray-50">
+                                <h3 class="font-medium text-gray-800">Regional Healthcare Disparities</h3>
+                                <p class="text-sm text-gray-600 mt-1">Analysis reveals significant variations in healthcare access across different regions, with rural areas showing 30% less preventative care utilization...</p>
+                                <div class="text-xs text-gray-500 mt-2">Generated: 2 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Section -->
+                <div class="col-span-12 md:col-span-6">
+                    <!-- Demand Spikes & Forecast -->
+                    <div class="card mb-4">
+                        <div class="card-header p-4 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-chart-line mr-2"></i> Healthcare Facilities Overview
+                            </h2>
+                            <div class="flex items-center space-x-2">
+                                <span id="last-refresh" class="text-xs text-gray-500"></span>
+                                <button id="refresh-healthcare" class="text-blue-600 hover:text-blue-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <!-- Facility Overview -->
+                            <div class="mb-4">
+                                <h3 class="text-md font-medium text-gray-700 mb-2">Facility Overview</h3>
+                                <div class="grid grid-cols-4 gap-4 mb-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Total Facilities</div>
+                                        <div class="stat-value text-xl" id="total-facilities">-</div>
+                                        <div class="text-xs text-gray-500" id="states-count">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Special Focus</div>
+                                        <div class="stat-value text-xl" id="sff-count">-</div>
+                                        <div class="text-xs text-gray-500" id="sff-candidates">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Abuse Reports</div>
+                                        <div class="stat-value text-xl" id="abuse-count">-</div>
+                                        <div class="text-xs text-gray-500" id="abuse-percentage">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Avg 5-Star Rating</div>
+                                        <div class="stat-value text-xl" id="avg-rating">-</div>
+                                        <div class="text-xs text-gray-500" id="quality-rating">-</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Quality Metrics -->
+                            <div class="mb-4">
+                                <h3 class="text-md font-medium text-gray-700 mb-2">Quality Metrics</h3>
+                                <div class="grid grid-cols-3 gap-4 mb-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Health Inspection</div>
+                                        <div class="stat-value text-xl" id="health-inspection">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Staffing Rating</div>
+                                        <div class="stat-value text-xl" id="staffing-rating">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Quality Rating</div>
+                                        <div class="stat-value text-xl" id="quality-rating-value">-</div>
+                                    </div>
+                                </div>
+                                <canvas id="qualityChart" height="200"></canvas>
+                            </div>
+
+                            <!-- Staffing Metrics -->
+                            <div class="mb-4">
+                                <h3 class="text-md font-medium text-gray-700 mb-2">Staffing Metrics</h3>
+                                <div class="grid grid-cols-4 gap-4 mb-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Nurse Hours/Day</div>
+                                        <div class="stat-value text-xl" id="nurse-hours">-</div>
+                                        <div class="text-xs text-gray-500" id="weekend-hours">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">RN Hours/Day</div>
+                                        <div class="stat-value text-xl" id="rn-hours">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Nurse Turnover</div>
+                                        <div class="stat-value text-xl" id="nurse-turnover">-</div>
+                                        <div class="text-xs text-gray-500" id="rn-turnover">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Admin Changes</div>
+                                        <div class="stat-value text-xl" id="admin-changes">-</div>
+                                    </div>
+                                </div>
+                                <canvas id="staffingChart" height="200"></canvas>
+                            </div>
+
+                            <!-- Performance Metrics -->
+                            <div class="mb-4">
+                                <h3 class="text-md font-medium text-gray-700 mb-2">Performance Metrics</h3>
+                                <div class="grid grid-cols-3 gap-4 mb-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Readmission Rate</div>
+                                        <div class="stat-value text-xl" id="readmission-rate">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Pressure Ulcers</div>
+                                        <div class="stat-value text-xl" id="pressure-ulcers">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Falls with Injury</div>
+                                        <div class="stat-value text-xl" id="falls">-</div>
+                                    </div>
+                                </div>
+                                <canvas id="performanceChart" height="200"></canvas>
+                            </div>
+
+                            <!-- Compliance Metrics -->
+                            <div class="mb-4">
+                                <h3 class="text-md font-medium text-gray-700 mb-2">Compliance Metrics</h3>
+                                <div class="grid grid-cols-4 gap-4 mb-4">
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Total Fines</div>
+                                        <div class="stat-value text-xl" id="total-fines">-</div>
+                                        <div class="text-xs text-gray-500" id="avg-fines">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Fine Amount</div>
+                                        <div class="stat-value text-xl" id="total-fine-amount">-</div>
+                                        <div class="text-xs text-gray-500" id="avg-fine-amount">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">Payment Denials</div>
+                                        <div class="stat-value text-xl" id="payment-denials">-</div>
+                                        <div class="text-xs text-gray-500" id="avg-denials">-</div>
+                                    </div>
+                                    <div class="bg-gray-50 p-3 rounded-md">
+                                        <div class="text-sm text-gray-600">COVID Vaccination</div>
+                                        <div class="stat-value text-xl" id="covid-vaccination">-</div>
+                                        <div class="text-xs text-gray-500" id="staff-vaccination">-</div>
+                                    </div>
+                                </div>
+                                <canvas id="complianceChart" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Geographical Distribution (Placeholder) -->
+                    <div class="card">
+                        <div class="card-header p-4">
+                            <h2 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-map-marked-alt mr-2"></i> Geographical Distribution
+                            </h2>
+                        </div>
+                        <div class="p-4">
+                            <iframe id="map-frame" src="location_map.html" style="width: 100%; height: 400px; border: none;"></iframe>
+                            <div id="info-panel" class="mt-2 p-2 bg-white rounded shadow">
+                                <div class="text-sm text-gray-600">
+                                    Active Data Points: <span id="point-count">0</span>
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    Last Updated: <span id="last-update">Never</span>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="text-sm font-medium text-gray-700">Data Statistics</div>
+                                    <div id="stats-container" class="text-xs text-gray-600">
+                                        <div>Total Points: <span id="total-points">-</span></div>
+                                        <div>Latitude Range: <span id="lat-range">-</span></div>
+                                        <div>Longitude Range: <span id="lng-range">-</span></div>
+                                        <div class="mt-1">
+                                            <div class="font-medium">Regional Distribution:</div>
+                                            <div id="region-distribution" class="ml-2"></div>
+                                        </div>
+                                        <div class="mt-1">
+                                            <div class="font-medium">Point Density:</div>
+                                            <div id="density-stats" class="ml-2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="legend" class="mt-2 p-2 bg-white rounded shadow">
+                                <div class="text-sm font-medium text-gray-700 mb-1">Intensity</div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-4 h-4 bg-blue-200"></div>
+                                    <div class="text-xs text-gray-600">Low</div>
+                                    <div class="w-4 h-4 bg-blue-400"></div>
+                                    <div class="text-xs text-gray-600">Medium</div>
+                                    <div class="w-4 h-4 bg-blue-600"></div>
+                                    <div class="text-xs text-gray-600">High</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side Section -->
+                <div class="col-span-12 md:col-span-3">
+                    <!-- Unemployment and Social Trends -->
+                    <div class="bg-white rounded-lg shadow p-4 mb-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold text-gray-800">Unemployment Trends</h3>
+                            <div class="flex items-center space-x-3">
+                                <span id="unemployment-last-refresh" class="text-sm text-gray-500"></span>
+                                <button id="refresh-unemployment" class="p-2 hover:bg-gray-100 rounded-full">
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <!-- Main Chart -->
+                            <div class="bg-white p-4 rounded-lg">
+                                <canvas id="unemploymentChart" height="250"></canvas>
+                            </div>
+
+                            <!-- Key Metrics -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-blue-50 p-3 rounded-lg">
+                                    <div class="text-sm text-gray-600 mb-1">Current Rate</div>
+                                    <div id="current-rate" class="text-xl font-semibold">-</div>
+                                </div>
+                                <div class="bg-green-50 p-3 rounded-lg">
+                                    <div class="text-sm text-gray-600 mb-1">YoY Change</div>
+                                    <div id="yoy-change" class="text-xl font-semibold">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Report Summary -->
+                    <div class="card">
+                        <div class="card-header p-4">
+                            <h2 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-file-alt mr-2"></i> Report Summary
+                            </h2>
+                        </div>
+                        <div class="p-4">
+                            <div class="report-item">
+                                <p class="font-medium text-gray-800">Hospital demand increased 23% in urban centers</p>
+                            </div>
+                            <div class="report-item">
+                                <p class="font-medium text-gray-800">Forecasted spike in Midwest region next week</p>
+                            </div>
+                            <div class="report-item">
+                                <p class="font-medium text-gray-800">Strong correlation between unemployment and hospital visits</p>
+                            </div>
+                            <div class="report-item">
+                                <p class="font-medium text-gray-800">Preventative care down 15% in areas with high eviction rates</p>
+                            </div>
+                            <div class="mt-4">
+                                <button class="w-full py-2 px-4 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 flex items-center justify-center">
+                                    <i class="fas fa-download mr-2"></i> Full Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chatbot Section -->
+            <div class="mt-4">
+                <div class="card">
+                    <div class="card-header p-4">
+                        <h2 class="text-lg font-semibold flex items-center">
+                            <i class="fas fa-comments mr-2"></i> AI Assistant
+                        </h2>
+                    </div>
+                    <div class="p-4 grid grid-cols-12 gap-4">
+                        <div class="col-span-12 md:col-span-8">
+                            <div id="chat-messages" class="bg-gray-50 p-4 rounded-md mb-4" style="height: 250px; overflow-y: auto;">
+                                <div class="space-y-4">
+                                    <div class="chat-message bot-message p-3">
+                                        <p class="text-gray-800">Hello, I'm your healthcare analytics assistant. How can I help you understand the data today?</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex">
+                                <input type="text" id="chat-input" placeholder="Ask a question about the data..." class="chat-input flex-grow px-4 py-2 text-gray-700">
+                                <button id="send-message" class="btn-primary ml-2 px-4 rounded-md flex items-center">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col-span-12 md:col-span-4 bg-gray-50 p-4 rounded-md">
+                            <h3 class="font-medium text-gray-800 mb-3">Suggested Questions</h3>
+                            <div class="space-y-2">
+                                <div class="p-2 bg-white rounded border border-gray-200 text-sm cursor-pointer hover:bg-blue-50" onclick="askQuestion(this.textContent)">What factors correlate with increased demand?</div>
+                                <div class="p-2 bg-white rounded border border-gray-200 text-sm cursor-pointer hover:bg-blue-50" onclick="askQuestion(this.textContent)">How accurate was last month's forecast?</div>
+                                <div class="p-2 bg-white rounded border border-gray-200 text-sm cursor-pointer hover:bg-blue-50" onclick="askQuestion(this.textContent)">Which social factors most impact hospital visits?</div>
+                                <div class="p-2 bg-white rounded border border-gray-200 text-sm cursor-pointer hover:bg-blue-50" onclick="askQuestion(this.textContent)">Summarize current trends in rural areas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Dashboard Footer -->
+        <footer class="p-4 bg-white border-t border-gray-200 text-center text-gray-600 text-sm">
+            <p>© 2023 Healthcare Predictive Analytics Platform | Data refreshes every 6 hours</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize charts when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize news tiles
+            initializeNewsTiles();
+            
+            // Update the charts initialization
+            updateHealthcareCharts();
+
+            // Unemployment Chart
+            const unemploymentCtx = document.getElementById('unemploymentChart').getContext('2d');
+            let unemploymentChart = null;
+
+            async function updateUnemploymentChart() {
+                try {
+                    // Update last refresh time
+                    const lastRefreshEl = document.getElementById('unemployment-last-refresh');
+                    lastRefreshEl.textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                    
+                    const response = await fetch('/api/unemployment/data');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Update current rate and YoY change
+                    if (data.data.unemployment_rate && data.data.unemployment_rate.length > 0) {
+                        const currentRate = data.data.unemployment_rate[data.data.unemployment_rate.length - 1];
+                        const yearAgoRate = data.data.unemployment_rate[0];
+                        const yoyChange = currentRate - yearAgoRate;
+                        
+                        document.getElementById('current-rate').innerHTML = `${currentRate.toFixed(1)}%`;
+                        document.getElementById('yoy-change').innerHTML = `
+                            <span class="${yoyChange >= 0 ? 'text-red-600' : 'text-green-600'}">
+                                ${yoyChange >= 0 ? '+' : ''}${yoyChange.toFixed(1)}%
+                            </span>`;
+                    }
+                    
+                    if (unemploymentChart) {
+                        unemploymentChart.destroy();
+                    }
+                    
+                    unemploymentChart = new Chart(unemploymentCtx, {
+                        type: 'line',
+                        data: {
+                            labels: data.data.labels,
+                            datasets: [{
+                                label: 'Unemployment Rate',
+                                data: data.data.unemployment_rate,
+                                borderColor: 'rgb(59, 130, 246)',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 4,
+                                pointHoverRadius: 6
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `Unemployment Rate: ${context.raw.toFixed(1)}%`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: false,
+                                    grid: {
+                                        display: true,
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toFixed(1) + '%';
+                                        }
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error updating unemployment chart:', error);
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'text-red-500 text-sm mt-2';
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    document.getElementById('unemployment-last-refresh').after(errorMessage);
+                }
+            }
+
+            // Update unemployment data every 30 seconds
+            setInterval(updateUnemploymentChart, 30000);
+            // Initial update
+            updateUnemploymentChart();
+        });
+
+        // News Tiles functionality
+        async function initializeNewsTiles() {
+            const tileTypes = ['top_stories', 'key_highlights', 'future_outlook'];
+            const topics = ['healthcare', 'medical technology', 'healthcare policy'];
+            
+            // Start tile generation for each type
+            for (let i = 0; i < tileTypes.length; i++) {
+                try {
+                    const response = await fetch('/api/start-tile-generation', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            topic: topics[i],
+                            tile_type: tileTypes[i]
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log(`Started tile generation for ${tileTypes[i]}:`, data);
+                } catch (error) {
+                    console.error(`Error starting tile generation for ${tileTypes[i]}:`, error);
+                }
+            }
+            
+            // Start periodic updates
+            setInterval(updateNewsTiles, 10000); // Update every 10 seconds
+            updateNewsTiles(); // Initial update
+        }
+
+        async function updateNewsTiles() {
+            const tileTypes = ['top_stories', 'key_highlights', 'future_outlook'];
+            const blogsContainer = document.querySelector('.blogs-container');
+            
+            try {
+                // Get latest content for each tile type
+                const responses = await Promise.all(
+                    tileTypes.map(type => 
+                        fetch(`/api/tiles/${type}/latest`)
+                            .then(response => response.json())
+                    )
+                );
+                
+                // Clear existing blog cards
+                blogsContainer.innerHTML = '';
+                
+                // Add new blog cards
+                responses.forEach((response, index) => {
+                    if (response && response.content) {
+                        const blogCard = document.createElement('div');
+                        blogCard.className = 'blog-card p-3 mb-3 bg-gray-50';
+                        
+                        // Split content into lines
+                        const lines = response.content.split('\n');
+                        
+                        // First line is the dynamic 3-word title
+                        const title = lines[0];
+                        
+                        // Get the content (everything after the title)
+                        const content = lines.slice(2).join('\n').trim();
+                        
+                        blogCard.innerHTML = `
+                            <h3 class="font-medium text-gray-800">${title}</h3>
+                            <p class="text-sm text-gray-600 mt-1">${content}</p>
+                            <div class="text-xs text-gray-500 mt-2">Generated: ${new Date().toLocaleTimeString()}</div>
+                        `;
+                        
+                        blogsContainer.appendChild(blogCard);
+                    }
+                });
+            } catch (error) {
+                console.error('Error updating news tiles:', error);
+                // Show error state in the container
+                blogsContainer.innerHTML = `
+                    <div class="blog-card p-3 mb-3 bg-gray-50">
+                        <h3 class="font-medium text-gray-800">Connection Error</h3>
+                        <p class="text-sm text-gray-600 mt-1">Unable to fetch latest updates. Please check your connection.</p>
+                        <div class="text-xs text-gray-500 mt-2">Last attempt: ${new Date().toLocaleTimeString()}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Add refresh button functionality
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            updateNewsTiles();
+            // Update last updated time
+            document.querySelector('.text-sm.text-gray-600 .font-medium').textContent = 
+                `Today, ${new Date().toLocaleTimeString()}`;
+        });
+
+        // Store chart instances
+        let qualityChartInstance = null;
+        let staffingChartInstance = null;
+        let performanceChartInstance = null;
+        let complianceChartInstance = null;
+
+        // Function to update healthcare charts and metrics
+        async function updateHealthcareCharts() {
+            try {
+                console.log('Fetching healthcare facilities data...');
+                const response = await fetch('/api/healthcare-facilities/data');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Received data:', data);
+                
+                if (!validateFacilitiesData(data)) {
+                    throw new Error('Invalid data structure received');
+                }
+                
+                // Update metrics
+                updateMetric('total-facilities', data.total_facilities);
+                updateMetric('states-count', data.states);
+                updateMetric('sff-count', data.special_focus_facilities);
+                updateMetric('sff-candidates', data.sff_candidates);
+                updateMetric('abuse-count', data.abuse_reports);
+                updateMetric('abuse-percentage', data.abuse_percentage);
+                updateMetric('avg-rating', data.quality_metrics.avg_rating);
+                updateMetric('quality-rating-value', data.quality_metrics.quality_rating);
+                updateMetric('health-inspection', data.quality_metrics.health_inspection);
+                updateMetric('staffing-rating', data.quality_metrics.staffing_rating);
+                updateMetric('nurse-hours', data.staffing_metrics.nurse_hours);
+                updateMetric('weekend-hours', data.staffing_metrics.weekend_hours);
+                updateMetric('rn-hours', data.staffing_metrics.rn_hours);
+                updateMetric('nurse-turnover', data.staffing_metrics.nurse_turnover);
+                updateMetric('rn-turnover', data.staffing_metrics.rn_turnover);
+                updateMetric('admin-changes', data.staffing_metrics.admin_changes);
+                
+                // Update performance metrics
+                updateMetric('readmission-rate', data.performance_metrics.readmission_rate);
+                updateMetric('pressure-ulcers', data.performance_metrics.pressure_ulcers);
+                updateMetric('falls', data.performance_metrics.falls);
+                updateMetric('total-fines', data.compliance_metrics.total_fines);
+                updateMetric('avg-fines', data.compliance_metrics.avg_fines);
+                updateMetric('total-fine-amount', data.compliance_metrics.total_fine_amount);
+                updateMetric('avg-fine-amount', data.compliance_metrics.avg_fine_amount);
+                updateMetric('payment-denials', data.compliance_metrics.payment_denials);
+                updateMetric('avg-denials', data.compliance_metrics.avg_denials);
+                updateMetric('covid-vaccination', data.performance_metrics.covid_vaccination);
+                updateMetric('staff-vaccination', data.performance_metrics.staff_vaccination);
+                
+                // Update charts
+                updateQualityChart(data.quality_metrics);
+                updateStaffingChart(data.staffing_metrics);
+                updatePerformanceChart(data.performance_metrics);
+                updateComplianceChart(data.compliance_metrics);
+                
+                // Update last refresh time
+                updateLastRefreshTime();
+                
+                console.log('Healthcare charts updated successfully');
+            } catch (error) {
+                console.error('Error updating healthcare charts:', error);
+                const cardHeader = document.querySelector('.card-header');
+                if (cardHeader) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'text-red-500 text-sm mt-2';
+                    errorDiv.textContent = `Error loading data: ${error.message}`;
+                    cardHeader.appendChild(errorDiv);
+                }
+            }
+        }
+
+        function updateQualityChart(data) {
+            const ctx = document.getElementById('qualityChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (qualityChartInstance) {
+                qualityChartInstance.destroy();
+            }
+            
+            qualityChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['5-Star', 'Health Inspection', 'Staffing', 'Quality'],
+                    datasets: [{
+                        label: 'Ratings',
+                        data: [
+                            data.overall_rating,
+                            data.health_inspection,
+                            data.staffing_rating,
+                            data.quality_rating
+                        ],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateStaffingChart(data) {
+            const ctx = document.getElementById('staffingChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (staffingChartInstance) {
+                staffingChartInstance.destroy();
+            }
+            
+            staffingChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Nurse Hours',
+                        data: [
+                            data.nurse_hours * 0.95,
+                            data.nurse_hours * 0.98,
+                            data.nurse_hours,
+                            data.nurse_hours,
+                            data.nurse_hours * 0.98,
+                            data.nurse_hours * 0.95,
+                            data.nurse_hours * 0.92
+                        ],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updatePerformanceChart(data) {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (performanceChartInstance) {
+                performanceChartInstance.destroy();
+            }
+            
+            performanceChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Readmissions', 'Pressure Ulcers', 'Falls', 'UTI', 'Depression'],
+                    datasets: [{
+                        label: 'Percentage',
+                        data: [
+                            data.readmission_rate,
+                            data.pressure_ulcers,
+                            data.falls,
+                            data.uti,
+                            data.depression
+                        ],
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)',
+                            'rgba(59, 130, 246, 0.7)'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateComplianceChart(data) {
+            const ctx = document.getElementById('complianceChart').getContext('2d');
+            
+            // Destroy existing chart if it exists
+            if (complianceChartInstance) {
+                complianceChartInstance.destroy();
+            }
+            
+            complianceChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Fines',
+                        data: [
+                            data.avg_fines * 0.9,
+                            data.avg_fines * 0.95,
+                            data.avg_fines,
+                            data.avg_fines * 0.98,
+                            data.avg_fines * 0.95,
+                            data.avg_fines * 0.92
+                        ],
+                        borderColor: '#1e40af',
+                        backgroundColor: 'rgba(30, 64, 175, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Helper function to safely update metrics
+        function updateMetric(id, value) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            } else {
+                console.warn(`Element with id '${id}' not found`);
+            }
+        }
+
+        // Helper function to validate facilities data structure
+        function validateFacilitiesData(data) {
+            return data 
+                && typeof data.total_facilities === 'number'
+                && typeof data.states === 'number'
+                && data.quality_metrics
+                && data.staffing_metrics
+                && data.performance_metrics
+                && data.compliance_metrics;
+        }
+
+        // Update charts every 30 seconds
+        setInterval(updateHealthcareCharts, 30000);
+        // Initial update
+        updateHealthcareCharts();
+
+        // Add refresh button functionality
+        const refreshButton = document.getElementById('refresh-healthcare');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', function() {
+                updateHealthcareCharts();
+            });
+        }
+
+        // Function to update last refresh time
+        function updateLastRefreshTime() {
+            const lastRefreshElement = document.getElementById('last-refresh');
+            if (lastRefreshElement) {
+                const now = new Date();
+                lastRefreshElement.textContent = `Last updated: ${now.toLocaleTimeString()}`;
+            }
+        }
+
+        // Chatbot functionality
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-message');
+        let isProcessing = false;
+
+        function addMessage(message, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${isUser ? 'user-message' : 'bot-message'} p-3`;
+            
+            // Add loading indicator for bot messages
+            if (!isUser && message === '...') {
+                messageDiv.innerHTML = `
+                    <div class="flex items-center space-x-2">
+                        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+                        <p class="text-gray-800">Thinking...</p>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `<p class="${isUser ? 'text-white' : 'text-gray-800'}">${message}</p>`;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            return messageDiv;
+        }
+
+        async function sendMessage() {
+            const message = chatInput.value.trim();
+            if (!message || isProcessing) return;
+
+            isProcessing = true;
+            sendButton.disabled = true;
+            chatInput.disabled = true;
+
+            // Add user message to chat
+            addMessage(message, true);
+            chatInput.value = '';
+
+            // Add loading indicator
+            const loadingMessage = addMessage('...');
+
+            try {
+                const response = await fetch('/api/chat/query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+
+                // Remove loading indicator
+                loadingMessage.remove();
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+
+                addMessage(data.response);
+            } catch (error) {
+                console.error('Error:', error);
+                loadingMessage.remove();
+                addMessage('Sorry, I encountered an error while processing your request. Please try again.');
+            } finally {
+                isProcessing = false;
+                sendButton.disabled = false;
+                chatInput.disabled = false;
+                chatInput.focus();
+            }
+        }
+
+        function askQuestion(question) {
+            if (isProcessing) return;
+            chatInput.value = question;
+            sendMessage();
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Save chat history to localStorage
+        function saveChatHistory() {
+            const messages = Array.from(chatMessages.children).map(msg => ({
+                text: msg.querySelector('p').textContent,
+                isUser: msg.classList.contains('user-message')
+            }));
+            localStorage.setItem('chatHistory', JSON.stringify(messages));
+        }
+
+        // Load chat history from localStorage
+        function loadChatHistory() {
+            const history = localStorage.getItem('chatHistory');
+            if (history) {
+                const messages = JSON.parse(history);
+                chatMessages.innerHTML = '';
+                messages.forEach(msg => addMessage(msg.text, msg.isUser));
+            }
+        }
+
+        // Save chat history when window is closed
+        window.addEventListener('beforeunload', saveChatHistory);
+
+        // Load chat history when page loads
+        document.addEventListener('DOMContentLoaded', loadChatHistory);
+
+        // Add event listener for refresh button
+        document.getElementById('refresh-unemployment').addEventListener('click', () => {
+            updateUnemploymentChart();
+        });
+    </script>
+</body>
+</html>

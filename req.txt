@@ -1,0 +1,48 @@
+# Core Data Processing
+pandas
+numpy
+python-dateutil
+tqdm
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Machine Learning & Deep Learning
+scikit-learn
+xgboost
+torch
+torchvision
+pytorch-lightning
+pytorch-forecasting
+
+# Time-Series Forecasting
+tsfresh
+featuretools
+statsmodels
+pmdarima
+
+# Model Tracking and Explainability
+mlflow
+shap
+
+# Web Framework for Integration with React.js
+fastapi
+uvicorn
+pydantic
+python-multipart
+aiofiles
+jinja2
+itsdangerous
+starlette
+
+# Optional: Web Dashboard
+streamlit
+
+# Model Serialization
+joblib
+
+beautifulsoup4
+openpyxl
+tensorboard
